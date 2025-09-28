@@ -22,6 +22,7 @@ export default {
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
+          glow: "hsl(var(--primary-glow))",
         },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
@@ -30,6 +31,10 @@ export default {
         destructive: {
           DEFAULT: "hsl(var(--destructive))",
           foreground: "hsl(var(--destructive-foreground))",
+        },
+        success: {
+          DEFAULT: "hsl(var(--success))",
+          foreground: "hsl(var(--success-foreground))",
         },
         muted: {
           DEFAULT: "hsl(var(--muted))",
@@ -46,6 +51,7 @@ export default {
         card: {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
+          hover: "hsl(var(--card-hover))",
         },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
@@ -80,10 +86,41 @@ export default {
             height: "0",
           },
         },
+        "slide-up": {
+          from: {
+            transform: "translateY(20px)",
+            opacity: "0",
+          },
+          to: {
+            transform: "translateY(0)",
+            opacity: "1",
+          },
+        },
+        "slide-in": {
+          from: {
+            transform: "translateX(-20px)",
+            opacity: "0",
+          },
+          to: {
+            transform: "translateX(0)",
+            opacity: "1",
+          },
+        },
+        "glow-pulse": {
+          "0%, 100%": {
+            boxShadow: "0 0 20px hsl(var(--primary) / 0.2)",
+          },
+          "50%": {
+            boxShadow: "0 0 40px hsl(var(--primary) / 0.4)",
+          },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        "slide-up": "slide-up 0.4s ease-out",
+        "slide-in": "slide-in 0.4s ease-out",
+        "glow-pulse": "glow-pulse 2s ease-in-out infinite",
       },
     },
   },
