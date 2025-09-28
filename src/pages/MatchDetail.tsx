@@ -45,7 +45,10 @@ export default function MatchDetail() {
 
   const eventIndex = parseInt(index);
   const events = data.events[date] || [];
-  const event = events.find((e, i) => e.sport === decodeURIComponent(sport) && i === eventIndex);
+  
+  // Find all events for the sport and get the specific one by index
+  const sportEvents = events.filter(e => e.sport === decodeURIComponent(sport));
+  const event = sportEvents[eventIndex];
 
   if (!event) {
     return (
@@ -175,40 +178,63 @@ export default function MatchDetail() {
           </div>
         </Card>
 
-        {/* Streaming Options */}
-        <Card className="p-6">
-          <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
-            <ExternalLink className="h-5 w-5 text-primary" />
-            Available Streams
-          </h3>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {event.channels.map((channel, index) => (
-              <Card 
-                key={index}
-                className="match-card p-4 cursor-pointer"
-                onClick={() => handleStreamClick(channel)}
-              >
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="font-medium">Stream {index + 1}</p>
-                    <p className="text-sm text-muted-foreground">
-                      {new URL(channel).hostname}
-                    </p>
-                  </div>
-                  <ExternalLink className="h-4 w-4 text-primary" />
+        {/* Live Stream */}
+        {event.channels.length > 0 && (
+          <Card className="p-6">
+            <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
+              <ExternalLink className="h-5 w-5 text-primary" />
+              Live Stream
+            </h3>
+            
+            <div className="aspect-video w-full mb-4">
+              <iframe
+                allow="encrypted-media"
+                width="100%"
+                height="100%"
+                scrolling="no"
+                frameBorder="0"
+                allowFullScreen
+                src={event.channels[0]}
+                title={`Live stream for ${event.match}`}
+                className="rounded-lg"
+              />
+            </div>
+            
+            {event.channels.length > 1 && (
+              <div className="space-y-2">
+                <p className="text-sm font-medium text-muted-foreground">Alternative Streams:</p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                  {event.channels.slice(1).map((channel, index) => (
+                    <Card 
+                      key={index + 1}
+                      className="match-card p-3 cursor-pointer"
+                      onClick={() => handleStreamClick(channel)}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="font-medium text-sm">Stream {index + 2}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {new URL(channel).hostname}
+                          </p>
+                        </div>
+                        <ExternalLink className="h-4 w-4 text-primary" />
+                      </div>
+                    </Card>
+                  ))}
                 </div>
-              </Card>
-            ))}
-          </div>
-          
-          {event.channels.length === 0 && (
+              </div>
+            )}
+          </Card>
+        )}
+
+        {event.channels.length === 0 && (
+          <Card className="p-6">
             <div className="text-center py-8 text-muted-foreground">
               <Users className="h-12 w-12 mx-auto mb-2 opacity-50" />
               <p>No streams available for this match</p>
             </div>
-          )}
-        </Card>
+          </Card>
+        )}
       </div>
     </div>
   );
