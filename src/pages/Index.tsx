@@ -1,11 +1,14 @@
+import { useState } from 'react';
 import { useSportsData } from '@/hooks/useSportsData';
 import { SportColumn } from '@/components/SportColumn';
 import { Header } from '@/components/Header';
+import { SportsFilter } from '@/components/SportsFilter';
 import { Card } from '@/components/ui/card';
 import { Loader2, AlertCircle } from 'lucide-react';
 
 const Index = () => {
   const { data, isLoading, error, isRefetching } = useSportsData();
+  const [selectedSports, setSelectedSports] = useState<string[]>([]);
 
   if (isLoading) {
     return (
@@ -83,7 +86,7 @@ const Index = () => {
   });
 
   // Get unique sports and their combined events
-  const sportsWithEvents = Object.entries(sportGroups).map(([sport, dateGroups]) => {
+  const allSportsWithEvents = Object.entries(sportGroups).map(([sport, dateGroups]) => {
     const allEvents = dateGroups.flatMap(group => group.events);
     const firstDateKey = dateGroups[0]?.dateKey || '';
     return {
@@ -93,10 +96,24 @@ const Index = () => {
     };
   }).filter(({ events }) => events.length > 0);
 
+  // Get available sports for filter
+  const availableSports = allSportsWithEvents.map(({ sport }) => sport).sort();
+
+  // Filter sports based on selection (show all if none selected)
+  const sportsWithEvents = selectedSports.length === 0 
+    ? allSportsWithEvents 
+    : allSportsWithEvents.filter(({ sport }) => selectedSports.includes(sport));
+
   return (
     <div className="min-h-screen p-6">
       <div className="max-w-7xl mx-auto">
         <Header totalEvents={totalEvents} liveEvents={liveEvents} />
+        
+        <SportsFilter 
+          availableSports={availableSports}
+          selectedSports={selectedSports}
+          onSportsChange={setSelectedSports}
+        />
         
         {isRefetching && (
           <div className="fixed top-4 right-4 z-50">
