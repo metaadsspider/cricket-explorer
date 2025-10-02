@@ -204,7 +204,9 @@ export default function MatchDetail() {
                 <TabsContent key={index} value={index.toString()} className="mt-0">
                   <div className="aspect-video w-full">
                     <iframe
-                      allow="encrypted-media"
+                      allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
+                      sandbox="allow-scripts allow-same-origin allow-presentation"
+                      referrerPolicy="no-referrer"
                       width="100%"
                       height="100%"
                       scrolling="no"
