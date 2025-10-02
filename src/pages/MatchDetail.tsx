@@ -3,9 +3,11 @@ import { useSportsData } from '@/hooks/useSportsData';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ArrowLeft, ExternalLink, Clock, Users, Trophy } from 'lucide-react';
 import { formatDistanceToNow, format } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
+import { useState } from 'react';
 
 export default function MatchDetail() {
   const { sport, date, index } = useParams<{
@@ -16,6 +18,7 @@ export default function MatchDetail() {
   const navigate = useNavigate();
   const { data, isLoading, error } = useSportsData();
   const { toast } = useToast();
+  const [activeStream, setActiveStream] = useState('0');
 
   if (isLoading) {
     return (
@@ -178,7 +181,7 @@ export default function MatchDetail() {
           </div>
         </Card>
 
-        {/* Live Stream */}
+        {/* Live Stream with Tabs */}
         {event.channels.length > 0 && (
           <Card className="p-6">
             <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
@@ -186,44 +189,39 @@ export default function MatchDetail() {
               Live Stream
             </h3>
             
-            <div className="aspect-video w-full mb-4">
-              <iframe
-                allow="encrypted-media"
-                width="100%"
-                height="100%"
-                scrolling="no"
-                frameBorder="0"
-                allowFullScreen
-                src={event.channels[0]}
-                title={`Live stream for ${event.match}`}
-                className="rounded-lg"
-              />
-            </div>
-            
-            {event.channels.length > 1 && (
-              <div className="space-y-2">
-                <p className="text-sm font-medium text-muted-foreground">Alternative Streams:</p>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                  {event.channels.slice(1).map((channel, index) => (
-                    <Card 
-                      key={index + 1}
-                      className="match-card p-3 cursor-pointer"
-                      onClick={() => handleStreamClick(channel)}
-                    >
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="font-medium text-sm">Stream {index + 2}</p>
-                          <p className="text-xs text-muted-foreground">
-                            {new URL(channel).hostname}
-                          </p>
-                        </div>
-                        <ExternalLink className="h-4 w-4 text-primary" />
-                      </div>
-                    </Card>
+            <Tabs value={activeStream} onValueChange={setActiveStream} className="w-full">
+              {event.channels.length > 1 && (
+                <TabsList className="grid w-full mb-4" style={{ gridTemplateColumns: `repeat(${event.channels.length}, minmax(0, 1fr))` }}>
+                  {event.channels.map((channel, index) => (
+                    <TabsTrigger key={index} value={index.toString()}>
+                      Stream {index + 1}
+                    </TabsTrigger>
                   ))}
-                </div>
-              </div>
-            )}
+                </TabsList>
+              )}
+              
+              {event.channels.map((channel, index) => (
+                <TabsContent key={index} value={index.toString()} className="mt-0">
+                  <div className="aspect-video w-full">
+                    <iframe
+                      allow="encrypted-media"
+                      width="100%"
+                      height="100%"
+                      scrolling="no"
+                      frameBorder="0"
+                      allowFullScreen
+                      src={channel}
+                      title={`Live stream ${index + 1} for ${event.match}`}
+                      className="rounded-lg"
+                    />
+                  </div>
+                  <p className="text-sm text-muted-foreground mt-2 flex items-center gap-2">
+                    <ExternalLink className="h-3 w-3" />
+                    {new URL(channel).hostname}
+                  </p>
+                </TabsContent>
+              ))}
+            </Tabs>
           </Card>
         )}
 
