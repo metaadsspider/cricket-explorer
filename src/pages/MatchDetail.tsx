@@ -47,11 +47,17 @@ export default function MatchDetail() {
   }
 
   const eventIndex = parseInt(index);
-  const events = data.events[date] || [];
+  const decodedSport = decodeURIComponent(sport);
   
-  // Find all events for the sport and get the specific one by index
-  const sportEvents = events.filter(e => e.sport === decodeURIComponent(sport));
-  const event = sportEvents[eventIndex];
+  // Collect all events for this sport across all dates
+  let allSportEvents: any[] = [];
+  Object.entries(data.events).forEach(([dateKey, events]) => {
+    const sportEvents = events.filter((e: any) => e.sport === decodedSport);
+    allSportEvents = [...allSportEvents, ...sportEvents];
+  });
+  
+  // Get the event by index from all sport events
+  const event = allSportEvents[eventIndex];
 
   if (!event) {
     return (
