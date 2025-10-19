@@ -212,7 +212,7 @@ export default function MatchDetail() {
                     <iframe
                       allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
                       sandbox="allow-scripts allow-same-origin allow-presentation"
-                      referrerPolicy="no-referrer"
+                      referrerPolicy="unsafe-url"
                       width="100%"
                       height="100%"
                       scrolling="no"
